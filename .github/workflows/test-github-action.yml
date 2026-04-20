@@ -26,6 +26,11 @@ jobs:
   e2e:
     needs: build
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, edge]
+    name: e2e (${{ matrix.browser }})
     steps:
       - uses: actions/checkout@v4
 
@@ -41,5 +46,5 @@ jobs:
           name: next-build
           path: .next
 
-      - name: Run E2E tests (headless)
-        run: npx start-server-and-test start http://localhost:3000 "cypress run --e2e"
+      - name: Run E2E tests on ${{ matrix.browser }}
+        run: npx start-server-and-test start http://localhost:3000 "cypress run --e2e --browser ${{ matrix.browser }}"
