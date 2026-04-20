@@ -1,9 +1,6 @@
 name: CI
 on: [push, pull_request]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -18,9 +15,6 @@ jobs:
       - run: npm ci
 
       - run: npm run build
-
-      - name: Debug - list .next
-        run: ls -la .next || echo ".next introuvable"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -46,4 +40,5 @@ jobs:
           name: next-build
           path: .next
 
-      - run: npm run e2e
+      - name: Run E2E tests (headless)
+        run: npx start-server-and-test start http://localhost:3000 "cypress run --e2e"
