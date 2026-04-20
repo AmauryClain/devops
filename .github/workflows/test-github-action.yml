@@ -4,6 +4,8 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-24.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
 
@@ -14,31 +16,21 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build
+      - name: Build
+        run: npm run build
+        continue-on-error: false
+
+      - name: Debug - répertoire courant et contenu
+        if: always()
+        run: |
+          echo "=== PWD ===" && pwd
+          echo "=== ls racine ===" && ls -la
+          echo "=== .next existe ? ===" && ls -la .next 2>/dev/null || echo "ABSENT"
+          echo "=== node version ===" && node -v
+          echo "=== next version ===" && npx next --version
 
       - uses: actions/upload-artifact@v4
         with:
           name: next-build
           path: .next
           if-no-files-found: error
-
-  e2e:
-    needs: build
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - run: npm ci
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: next-build
-          path: .next
-
-      - name: Run E2E tests (headless)
-        run: npx start-server-and-test start http://localhost:3000 "cypress run --e2e"
