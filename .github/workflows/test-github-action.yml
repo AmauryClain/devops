@@ -14,5 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-2
     steps:
-      - run: ls -lah
       - uses: actions/checkout@v6
+      - run: npm install
+      - run: npm run build
