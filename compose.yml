@@ -1,8 +1,8 @@
 services:
   next:
-    build: 
+    build:
       context: .
-      dockerfile: docker/next/Dockerfile
+      target: next
     environment:
       - APP_ENV=dev
     ports:
